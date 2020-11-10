@@ -1,0 +1,36 @@
+name: MicroK8s Kube Edge
+
+on:  
+
+  push:
+  
+  #schedule:
+  # - cron:  '0 1 * * *' 
+  
+  workflow_dispatch:
+    inputs:
+      workflowAction:
+        description: 'Action'
+        default: 'Build Docker image for temperature-mapper'
+        required: true
+ 
+jobs:
+  microk8s-kube-bench:
+  
+    runs-on: ubuntu-20.04
+
+    steps:
+      
+    - name: Check environment
+      run: |-
+        lsb_release -a
+        
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - name: install MicroK8s + kube-bench
+      run: |-
+        cd ke-edge
+        docker build --file Dockerfile --tag didierdurand/temperature-mapper
+                         
+   
