@@ -1,0 +1,24 @@
+apiVersion: devices.kubeedge.io/v1alpha2
+kind: Device
+metadata:
+  name: temperature-device
+  labels:
+    description: 'temperature device'
+    manufacturer: 'ke-test manufacturer'
+spec:
+  deviceModelRef:
+    name: temperature-device-model
+  nodeSelector:
+    nodeSelectorTerms:
+      - matchExpressions:
+          - key: ''
+            operator: In
+            values:
+              - raspberry-pi
+status:
+  twins:
+    - propertyName: temperature-status
+      desired:
+        metadata:
+          type: string
+        value: ''
