@@ -32,7 +32,7 @@ jobs:
       run: |-
         cd ke-edge
         echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERID }} --password-stdin
-        docker build --file Dockerfile --tag didierdurand/temperature-mapper .
-        docker push didierdurand/temperature-mapper
+        docker build --file Dockerfile --tag didierdurand/kube-edge-temperature-mapper .
+        docker push didierdurand/kube-edge-temperature-mapper
                          
    
