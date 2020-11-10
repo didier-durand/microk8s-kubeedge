@@ -1,4 +1,4 @@
-name: MicroK8s Kube Edge
+name: MicroK8s KubeEdge
 
 on:  
 
@@ -28,7 +28,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     
-    - name: install MicroK8s + kube-bench
+    - name: KubeEdge - build docker image for temperature mapper
       run: |-
         cd ke-edge
         echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERID }} --password-stdin
