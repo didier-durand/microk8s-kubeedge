@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: apps/v1 
 kind: Deployment
 metadata:
   name: temperature-mapper
@@ -18,7 +18,7 @@ spec:
       nodeSelector:
         name: "raspberry-pi"
       containers:
-      - name: temperature
+      - name: temperature-mapper
         image: didierdurand/kube-edge-temperature-mapper
         imagePullPolicy: IfNotPresent
         securityContext:
