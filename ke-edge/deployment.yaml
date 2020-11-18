@@ -8,11 +8,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: temperature
+      app: temperature-mapper
   template:
     metadata:
       labels:
-        app: temperature
+        app: temperature-mapper
     spec:
       hostNetwork: true
       nodeSelector:
