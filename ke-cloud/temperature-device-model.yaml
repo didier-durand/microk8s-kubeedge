@@ -10,4 +10,4 @@ spec:
       type:
         string:
           accessMode: ReadOnly
-          defaultValue: ''
+          defaultValue: 'default temperature'

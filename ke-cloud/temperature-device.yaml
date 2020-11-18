@@ -14,11 +14,11 @@ spec:
           - key: ''
             operator: In
             values:
-              - raspberry-pi
+              - microk8s-ke-edge-node
 status:
   twins:
-    - propertyName: temperature-status
+    - propertyName: temperature-value
       desired:
         metadata:
           type: string
-        value: ''
+        value: 'no temperature read'

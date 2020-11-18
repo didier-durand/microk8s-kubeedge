@@ -16,7 +16,7 @@ spec:
     spec:
       hostNetwork: true
       nodeSelector:
-        name: "raspberry-pi"
+        name: microk8s-ke-edge-node
       containers:
       - name: temperature-mapper
         image: didierdurand/kube-edge-temperature-mapper
