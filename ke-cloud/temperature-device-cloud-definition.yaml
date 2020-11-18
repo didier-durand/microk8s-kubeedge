@@ -1,9 +1,9 @@
 apiVersion: devices.kubeedge.io/v1alpha2
 kind: Device
 metadata:
-  name: temperature-device
+  name: temperature-device-cloud-definition
   labels:
-    description: 'temperature device'
+    description: 'temperature device simulator'
     manufacturer: 'ke-test manufacturer'
 spec:
   deviceModelRef:

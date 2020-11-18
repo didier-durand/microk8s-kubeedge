@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   properties:
-    - name: temperature-status
+    - name: temperature-value
       description: 'Temperature collected from the edge device'
       type:
         string:
