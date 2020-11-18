@@ -4,18 +4,18 @@ on:
 
   push:
   
-  #schedule:
-  # - cron:  '0 1 * * *' 
+  schedule:
+  - cron:  '0 1 * * *' 
   
   workflow_dispatch:
     inputs:
       workflowAction:
         description: 'Action'
-        default: 'Build Docker image for temperature-mapper'
+        default: 'Build Docker image for kubeedge temperature-mapper'
         required: true
  
 jobs:
-  microk8s-kube-bench:
+  microk8s-kube-edge:
   
     runs-on: ubuntu-20.04
 
