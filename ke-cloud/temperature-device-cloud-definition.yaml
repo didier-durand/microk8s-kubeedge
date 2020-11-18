@@ -3,8 +3,8 @@ kind: Device
 metadata:
   name: temperature-device-cloud-definition
   labels:
-    description: 'temperature device simulator'
-    manufacturer: 'ke-test manufacturer'
+    description: 'ke-test-temperature-device-simulator'
+    manufacturer: 'ke-test-manufacturer'
 spec:
   deviceModelRef:
     name: temperature-device-model
