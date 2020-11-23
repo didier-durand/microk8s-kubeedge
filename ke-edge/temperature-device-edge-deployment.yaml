@@ -1,14 +1,14 @@
 apiVersion: apps/v1 
 kind: Deployment
 metadata:
-  name: temperature-mapper
+  name: temperature-mapper-deployment
   labels:
     app: temperature
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: temperature-mapper
+      app: temperature-mapper-deployment
   template:
     metadata:
       labels:
