@@ -105,7 +105,7 @@ then
       
       gcloud compute ssh "$KE_INSTANCE" --command='sudo rm -rf /var/lib/apt/lists/* && (sudo apt update -y || sudo apt update -y) && sudo apt upgrade -y && sudo apt autoremove  -y' --zone="$GCP_ZONE" --project="$GCP_PROJECT"
       gcloud compute scp "$0"  "$KE_INSTANCE:$(basename $0)" --zone="$GCP_ZONE" --project="$GCP_PROJECT"
-      gcloud compute scp "$(dirname $0)/ke-device-simulator.sh" "$KE_INSTANCE:ke-device-simulator.sh" --zone $GCP_ZONE --project=$GCP_PROJECT
+      #gcloud compute scp "$(dirname $0)/ke-device-simulator.sh" "$KE_INSTANCE:ke-device-simulator.sh" --zone $GCP_ZONE --project=$GCP_PROJECT
       gcloud compute ssh "$KE_INSTANCE" --command="sudo chmod ugo+x ./$(basename $0)" --zone="$GCP_ZONE" --project="$GCP_PROJECT"
       gcloud compute ssh "$KE_INSTANCE" --command='sudo chmod ugo+x ke-device-simulator.sh' --zone "$GCP_ZONE" --project="$GCP_PROJECT"
       
@@ -129,6 +129,11 @@ then
         then
            KE_CLOUD_IP=$(cat "$STEP_REPORT" | grep "$KE_CLOUD_IP_TAG" | awk '{print $2}')
         fi
+        while [[ ! $(gcloud compute ssh "$KE_INSTANCE" --command='uname -a' --zone="$GCP_ZONE" --project="$GCP_PROJECT") == *'Linux'* ]]
+        do
+          echo -e "instance not ready for ssh..."
+          sleep 5s 
+        done
       done
       
       cat "$STEP_REPORT" | grep "$SCRIPT_COMPLETED"
@@ -237,6 +242,13 @@ exec_step1()
   fi
   
   echo -e "$STEP_COMPLETED $STEP"
+  
+  if [[ -f /var/run/reboot-required ]]
+  then
+    echo 'WARNING: reboot required. Reboot in 2s...'
+    sleep 2s
+    sudo reboot
+  fi
 }
 
 exec_step2()
