@@ -1,4 +1,4 @@
-name: MicroK8s KubeEdge
+name: Docker Image for KubeEdge
 
 on:  
 
