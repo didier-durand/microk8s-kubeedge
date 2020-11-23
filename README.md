@@ -10,7 +10,7 @@ Currently working on a solution for [issue #2362](https://github.com/kubeedge/ku
 If you wanna dig into the details:
 
 1. Structured log of failing execution is [here](https://github.com/didier-durand/microk8s-kubeedge/runs/1442253504) when you're signed in with your GitHub account
-2. Raw log of failing execution is accessible via top right menu : "..." > View Raw Logs
+2. Raw log of failing execution is accessible via top right menu of the page linked in previous bullet : go to "..." > View Raw Logs
 3. Shell script generating those logs is [microk8s-kubeedge.sh](https://github.com/didier-durand/microk8s-kubeedge/blob/main/sh/microk8s-kubeedge.sh)
 
 For further details, please, check the official Git [repository of KubeEdge](https://github.com/kubeedge/kubeedge)
