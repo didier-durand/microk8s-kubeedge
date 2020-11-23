@@ -2,7 +2,7 @@ name: Docker Image for KubeEdge
 
 on:  
 
-  push:
+  #push:
   
   schedule:
   - cron:  '0 1 * * WED' 
