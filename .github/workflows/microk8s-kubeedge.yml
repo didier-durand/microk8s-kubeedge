@@ -46,6 +46,7 @@ jobs:
         KE_GCE_DELETE: true
         GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
       run: |-
+        echo -e "### starting workflow on GCE:"
         #bash sh/microk8s-akri.sh
                          
     - name: commit back changed files
