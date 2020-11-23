@@ -47,7 +47,7 @@ jobs:
         GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
       run: |-
         echo -e "### starting workflow on GCE:"
-        #bash sh/microk8s-akri.sh
+        bash sh/microk8s-kubeedge.sh
                          
     - name: commit back changed files
       run: | 
