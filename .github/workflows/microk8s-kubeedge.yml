@@ -43,7 +43,7 @@ jobs:
     
     - name: install MicroK8s + KubeEdge
       env: 
-        KE_GCE_DELETE: true
+        KE_GCE_DELETE: false
         GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
       run: |-
         echo -e "### starting workflow on GCE:"
