@@ -107,7 +107,7 @@ then
       gcloud compute scp "$0"  "$KE_INSTANCE:$(basename $0)" --zone="$GCP_ZONE" --project="$GCP_PROJECT"
       #gcloud compute scp "$(dirname $0)/ke-device-simulator.sh" "$KE_INSTANCE:ke-device-simulator.sh" --zone $GCP_ZONE --project=$GCP_PROJECT
       gcloud compute ssh "$KE_INSTANCE" --command="sudo chmod ugo+x ./$(basename $0)" --zone="$GCP_ZONE" --project="$GCP_PROJECT"
-      gcloud compute ssh "$KE_INSTANCE" --command='sudo chmod ugo+x ke-device-simulator.sh' --zone "$GCP_ZONE" --project="$GCP_PROJECT"
+      #gcloud compute ssh "$KE_INSTANCE" --command='sudo chmod ugo+x ke-device-simulator.sh' --zone "$GCP_ZONE" --project="$GCP_PROJECT"
       
       I=0
       STEP=1
