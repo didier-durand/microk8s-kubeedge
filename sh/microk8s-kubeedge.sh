@@ -44,7 +44,7 @@ if [[ -z ${KE_EDGE+x} ]]                                      ; then KE_EDGE='tr
 if [[ -z ${KE_CLOUD+x} ]]                                     ; then KE_CLOUD='true'                            ; fi ; echo "kubeedge install cloud: $KE_CLOUD"
 if [[ -z ${KE_TEMP_MAPPER+x} ]]                               ; then KE_TEMP_MAPPER='true'                      ; fi ; echo "kubeedge temp mapper: $KE_TEMP_MAPPER"
 
-if [[ -z ${KE_VERSION+x} ]]                                   ; then KE_VERSION='v1.4.0'                        ; fi ; echo "kubeedge version: $KE_VERSION"
+if [[ -z ${KE_VERSION+x} ]]                                   ; then KE_VERSION='v1.5.0'                        ; fi ; echo "kubeedge version: $KE_VERSION"
 if [[ -z ${KE_CLOUD_PORT+x} ]]                                ; then KE_CLOUD_PORT='10000'                      ; fi ; echo "kubeedge cloud port: $KE_CLOUD_PORT"
 
 if [[ -z ${KE_IMAGE_FAMILY+x} ]]                              ; then KE_IMAGE_FAMILY='ubuntu-2004-lts'          ; fi ; echo "kubeedge image family: $KE_IMAGE_FAMILY"
@@ -355,15 +355,14 @@ exec_step2()
     #microk8s kubectl apply -f 'https://raw.githubusercontent.com/kubeedge/kubeedge/master/build/crds/reliablesyncs/cluster_objectsync_v1alpha1.yaml'
     #microk8s kubectl apply -f 'https://raw.githubusercontent.com/kubeedge/kubeedge/master/build/crds/reliablesyncs/objectsync_v1alpha1.yaml'
 
+    echo -e "\n### list CRDs:"
     microk8s kubectl get crds
-    microk8s kubectl get crds | grep 'devices.devices.kubeedge.io'
-    microk8s kubectl get crds | grep 'devicemodels.devices.kubeedge.io'
-    microk8s kubectl get crds | grep 'clusterobjectsyncs.reliablesyncs.kubeedge.io'
-    microk8s kubectl get crds | grep 'objectsyncs.reliablesyncs.kubeedge.io'
+    microk8s kubectl get crds | grep 'devices.devices.kubeedge.io' > null
+    microk8s kubectl get crds | grep 'devicemodels.devices.kubeedge.io' > null
+    microk8s kubectl get crds | grep 'clusterobjectsyncs.reliablesyncs.kubeedge.io' > null
+    microk8s kubectl get crds | grep 'objectsyncs.reliablesyncs.kubeedge.io' > null
   
-    #microk8s kubectl apply -f 'https://raw.githubusercontent.com/kubeedge/kubeedge/master/build/deployment.yaml'
-    #microk8s kubectl wait --for=condition=available --timeout=90s deployment.apps/nginx-deployment -n default
-  
+    echo -e "\n### get all --all-namespaces:"
     microk8s kubectl get all --all-namespaces
 
   fi
@@ -377,6 +376,7 @@ exec_step2()
        echo -e "### apply device yamls: "
        microk8s kubectl apply -f 'https://raw.githubusercontent.com/didier-durand/microk8s-kubeedge/main/ke-cloud/temperature-device-model.yaml'
        microk8s kubectl apply -f 'https://raw.githubusercontent.com/didier-durand/microk8s-kubeedge/main/ke-cloud/temperature-device.yaml'
+       #microk8s kubectl delete -f 'https://raw.githubusercontent.com/didier-durand/microk8s-kubeedge/main/ke-edge/temperature-device-edge-deployment.yaml'
        microk8s kubectl apply -f 'https://raw.githubusercontent.com/didier-durand/microk8s-kubeedge/main/ke-edge/temperature-device-edge-deployment.yaml'
        
        echo -e "### get device models: "
