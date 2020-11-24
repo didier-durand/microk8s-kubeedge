@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       labels:
-        app: temperature-mapper
+        app: temperature-mapper-deployment
     spec:
       hostNetwork: true
       nodeSelector:
