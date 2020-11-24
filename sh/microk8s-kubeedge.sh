@@ -167,7 +167,8 @@ KE_ADM="keadm-$KE_VERSION-$KE_OS-$KE_ARCH/keadm/keadm"
 cd 
 if [[ -z $(cat .bashrc | grep "$KE_ADM") ]]
 then
-  echo "alias keadm='$pwd/$KE_ADM'" >> .bashrc
+  alias keadm="$HOME/$KE_ADM" 
+  echo "alias keadm='$HOME/$KE_ADM'" >> .bashrc
 fi
 
 [[ -d '.kube' ]] || (mkdir '.kube' && sudo mkdir '/root/.kube')
@@ -180,6 +181,8 @@ exec_step1()
 {
   local STEP="$1"
   local KE_INSTANCE="$2"
+  
+  sudo apt update -y && sudo apt install -y net-tools
   
   if [[ ! -f "$KE_ADM" ]]
   then
@@ -261,7 +264,7 @@ exec_step2()
   then
   
     echo -e "### check connectivity to cloud core @ $KE_CLOUD_IP from $KE_INTERNAL_IP:"
-    ping -c 10 "$KE_CLOUD_IP"
+    ping -c 5 "$KE_CLOUD_IP"
   
     echo -e "\n### docker version:"
     docker version
@@ -276,6 +279,9 @@ exec_step2()
     fi
     echo -e "\n### kubeedge edgecore config:"      
     cat /etc/kubeedge/config/edgecore.yaml
+    
+    echo -e "\n### check mosquitto broker presence:"      
+    sudo netstat -tulpn | grep LISTEN | grep 'mosquitto' | grep '0.0.0.0:1883'
    
     echo -e "\n### kubeedge edgecore log (initial):" 
     journalctl -u edgecore.service > edgecore.log
@@ -312,6 +318,7 @@ exec_step2()
     then
       echo -e "\n### kubeedge cloudcore setup:"
       #$KE_ADM init --help
+      #sudo $KE_ADM gettoken
       sudo $KE_ADM init \
                 --advertise-address="$KE_INTERNAL_IP"  \
                 --kube-config "$KUBE_CONFIG"
