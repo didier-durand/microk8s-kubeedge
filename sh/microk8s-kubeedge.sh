@@ -42,11 +42,10 @@ if [[ -z ${KE_GCE_DELETE+x} ]]                                ; then KE_GCE_DELE
 
 if [[ -z ${KE_EDGE+x} ]]                                      ; then KE_EDGE='true'                             ; fi ; echo "kubeedge install edge: $KE_EDGE"
 if [[ -z ${KE_CLOUD+x} ]]                                     ; then KE_CLOUD='true'                            ; fi ; echo "kubeedge install cloud: $KE_CLOUD"
-if [[ -z ${KE_TEMP_MAPPER+x} ]]                               ; then KE_TEMP_MAPPER='false'                     ; fi ; echo "kubeedge temp mapper: $KE_TEMP_MAPPER"
+if [[ -z ${KE_TEMP_MAPPER+x} ]]                               ; then KE_TEMP_MAPPER='true'                      ; fi ; echo "kubeedge temp mapper: $KE_TEMP_MAPPER"
 
 if [[ -z ${KE_VERSION+x} ]]                                   ; then KE_VERSION='v1.4.0'                        ; fi ; echo "kubeedge version: $KE_VERSION"
 if [[ -z ${KE_CLOUD_PORT+x} ]]                                ; then KE_CLOUD_PORT='10000'                      ; fi ; echo "kubeedge cloud port: $KE_CLOUD_PORT"
-#if [[ -z ${KE_EDGE_NODE+x} ]]                                 ; then KE_EDGE_NODE='microk8s-ke-edge-node'       ; fi ; echo "kubeedge ke edge node: $KE_EDGE_NODE"#
 
 if [[ -z ${KE_IMAGE_FAMILY+x} ]]                              ; then KE_IMAGE_FAMILY='ubuntu-2004-lts'          ; fi ; echo "kubeedge image family: $KE_IMAGE_FAMILY"
 if [[ -z ${KE_IMAGE_PROJECT+x} ]]                             ; then KE_IMAGE_PROJECT='ubuntu-os-cloud'         ; fi ; echo "kubeedge image project: $KE_IMAGE_PROJECT"
@@ -372,19 +371,12 @@ exec_step2()
   if [[ "$KE_TEMP_MAPPER" == 'true' ]]
   then
     
-    #if [[ "$KE_INSTANCE" == *'edge'* ]]
-    #then
-    #  echo -e "### run MQTT broker: "
-    #  docker run --rm -d -p 1883:1883 --name 'eclipse-mosquitto' 'eclipse-mosquitto'
-    #  docker ps | grep 'eclipse-mosquitto'
-    #fi
-    
     echo -e "### deploy device manifests: "
     if [[ "$KE_INSTANCE" == *'cloud'* ]]
     then
        echo -e "### apply device yamls: "
        microk8s kubectl apply -f 'https://raw.githubusercontent.com/didier-durand/microk8s-kubeedge/main/ke-cloud/temperature-device-model.yaml'
-       microk8s kubectl apply -f 'https://raw.githubusercontent.com/didier-durand/microk8s-kubeedge/main/ke-cloud/temperature-device-cloud-definition.yaml'
+       microk8s kubectl apply -f 'https://raw.githubusercontent.com/didier-durand/microk8s-kubeedge/main/ke-cloud/temperature-device.yaml'
        microk8s kubectl apply -f 'https://raw.githubusercontent.com/didier-durand/microk8s-kubeedge/main/ke-edge/temperature-device-edge-deployment.yaml'
        
        echo -e "### get device models: "
