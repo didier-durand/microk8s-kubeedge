@@ -89,6 +89,9 @@ then
 
   KE_CLOUD_IP_TAG='ke-cloud-ip:'
   KE_CLOUD_IP=''
+  KE_SECURITY_TOKEN_TAG='ke-security-token:'
+  KE_SECURITY_TOKEN=''
+  
   declare -a KE_INSTANCES=("$KE_CLOUD_INSTANCE" "$KE_EDGE_INSTANCE")
   
   if [[ ! "$ON_GCE" == *'Google'* ]]
@@ -116,7 +119,7 @@ then
       do
         I=$((I+1))
         echo -e "\n### triggering script step: $STEP  - iteration: $I - instance: $KE_INSTANCE"
-        gcloud compute ssh "$KE_INSTANCE" --command="bash ./$(basename $0) $STEP $I $KE_INSTANCE $KE_CLOUD_IP" --zone="$GCP_ZONE" --project="$GCP_PROJECT" | tee -a "$STEP_REPORT"
+        gcloud compute ssh "$KE_INSTANCE" --command="bash ./$(basename $0) $STEP $I $KE_INSTANCE $KE_CLOUD_IP $KE_SECURITY_TOKEN" --zone="$GCP_ZONE" --project="$GCP_PROJECT" | tee -a "$STEP_REPORT"
         if [[ $(cat "$STEP_REPORT" | grep "$STEP_COMPLETED $STEP") ]]
         then
           if [[ "$STEP" -lt "$TOTAL_STEPS" ]]
@@ -128,6 +131,12 @@ then
         if [[ ! -z $(cat "$STEP_REPORT" |  grep "$KE_CLOUD_IP_TAG") ]]
         then
            KE_CLOUD_IP=$(cat "$STEP_REPORT" | grep "$KE_CLOUD_IP_TAG" | awk '{print $2}')
+           echo -e "ke cloud ip set to: $KE_CLOUD_IP (instance: $KE_INSTANCE - step: $STEP - iteration: $I)"
+        fi
+        if [[ ! -z $(cat "$STEP_REPORT" |  grep "$KE_SECURITY_TOKEN_TAG") ]]
+        then
+           KE_SECURITY_TOKEN=$(cat "$STEP_REPORT" | grep "$KE_SECURITY_TOKEN_TAG" | awk '{print $2}')
+           echo -e "ke security token set to: $KE_SECURITY_TOKEN (instance: $KE_INSTANCE - step: $STEP - iteration: $I)"
         fi
         while [[ ! $(gcloud compute ssh "$KE_INSTANCE" --command='uname -a' --zone="$GCP_ZONE" --project="$GCP_PROJECT") == *'Linux'* ]]
         do
@@ -136,7 +145,7 @@ then
         done
       done
       
-      cat "$STEP_REPORT" | grep "$SCRIPT_COMPLETED"
+      cat "$STEP_REPORT" | grep "$SCRIPT_COMPLETED"  > /dev/null
       rm 'ke-step-report'*
       
     done
@@ -207,7 +216,6 @@ exec_step1()
     if [[ -z $(which mosquitto_sub) ]]
     then
       echo -e "\n### install mosquitto-clients:"
-      # https://mosquitto.org/man/mosquitto_sub-1.html
       sudo apt install -y mosquitto-clients
     fi
   
@@ -244,7 +252,7 @@ exec_step1()
     fi
   fi
   
-  echo -e "$STEP_COMPLETED $STEP"
+  echo -e "$STEP_COMPLETED $STEP on $KE_INSTANCE"
   
   if [[ -f /var/run/reboot-required ]]
   then
@@ -259,6 +267,7 @@ exec_step2()
   local STEP="$1"
   local KE_INSTANCE="$2"
   local KE_CLOUD_IP="$3"
+  local KE_SECURITY_TOKEN="$4"
   
   if [[ "$KE_INSTANCE" == *'edge'* ]]
   then
@@ -275,13 +284,14 @@ exec_step2()
       #$KE_ADM join --help
       sudo $KE_ADM join \
                 --cloudcore-ipport="$KE_CLOUD_IP:$KE_CLOUD_PORT"  \
-                --edgenode-name="$KE_EDGE_NODE"
+                --edgenode-name="$KE_EDGE_NODE" \
+                --token="$KE_SECURITY_TOKEN"
     fi
     echo -e "\n### kubeedge edgecore config:"      
     cat /etc/kubeedge/config/edgecore.yaml
     
     echo -e "\n### check mosquitto broker presence:"      
-    sudo netstat -tulpn | grep LISTEN | grep 'mosquitto' | grep '0.0.0.0:1883'
+    sudo netstat -tulpn | grep LISTEN | grep 'mosquitto' | grep '0.0.0.0:1883'
    
     echo -e "\n### kubeedge edgecore log (initial):" 
     journalctl -u edgecore.service > edgecore.log
@@ -323,6 +333,15 @@ exec_step2()
                 --advertise-address="$KE_INTERNAL_IP"  \
                 --kube-config "$KUBE_CONFIG"
     fi
+    echo -e "$KE_CLOUD_IP_TAG $KE_INTERNAL_IP"
+    
+    echo -e "\n### get security token:"
+    #some wait is needed before token is available
+    sleep 20s
+    KE_SECURITY_TOKEN=$($KE_ADM gettoken --kube-config "$KUBE_CONFIG")
+    echo -e "$KE_SECURITY_TOKEN_TAG $KE_SECURITY_TOKEN"
+    
+    
   
     echo -e "\n### kubeedge cloudcore config:"
     ls -lh /etc/kubeedge/config/cloudcore.yaml
@@ -347,8 +366,7 @@ exec_step2()
     #microk8s kubectl wait --for=condition=available --timeout=90s deployment.apps/nginx-deployment -n default
   
     microk8s kubectl get all --all-namespaces
-    
-    echo -e "$KE_CLOUD_IP_TAG $KE_INTERNAL_IP"
+
   fi
   
   if [[ "$KE_TEMP_MAPPER" == 'true' ]]
@@ -388,8 +406,8 @@ exec_step2()
     
   fi
   
-  echo -e "$STEP_COMPLETED $STEP"
-  echo -e "$SCRIPT_COMPLETED"
+  echo -e "$STEP_COMPLETED $STEP on $KE_INSTANCE"
+  echo -e "$SCRIPT_COMPLETED on $KE_INSTANCE"
 }
 
 exec_main()
@@ -399,15 +417,16 @@ exec_main()
   ITERATION=$2
   KE_INSTANCE=$3
   KE_CLOUD_IP=$4
+  KE_SECURITY_TOKEN=$5
   
-  echo -e "executing step: $STEP - iteration: $ITERATION - instance: $KE_INSTANCE - ke cloud ip: $KE_CLOUD_IP"
+  echo -e "executing step: $STEP - iteration: $ITERATION - instance: $KE_INSTANCE - ke cloud ip: $KE_CLOUD_IP - ke security token: $KE_SECURITY_TOKEN"
   
   case "$STEP" in
 	1)
-		exec_step1 "$STEP" "$KE_INSTANCE" "$KE_CLOUD_IP"
+		exec_step1 "$STEP" "$KE_INSTANCE" "$KE_CLOUD_IP" "$KE_SECURITY_TOKEN"
 		;;
 	2)
-		exec_step2 "$STEP" "$KE_INSTANCE" "$KE_CLOUD_IP"
+		exec_step2 "$STEP" "$KE_INSTANCE" "$KE_CLOUD_IP" "$KE_SECURITY_TOKEN"
 		;;
 	*)
 	  echo -e "Unknown step: $STEP"
@@ -417,4 +436,4 @@ exec_main()
   
 }
 
-exec_main "$1" "$2" "$3" "$4"
+exec_main "$1" "$2" "$3" "$4" "$5"
