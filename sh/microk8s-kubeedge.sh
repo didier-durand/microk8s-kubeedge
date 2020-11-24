@@ -46,12 +46,12 @@ if [[ -z ${KE_TEMP_MAPPER+x} ]]                               ; then KE_TEMP_MAP
 
 if [[ -z ${KE_VERSION+x} ]]                                   ; then KE_VERSION='v1.4.0'                        ; fi ; echo "kubeedge version: $KE_VERSION"
 if [[ -z ${KE_CLOUD_PORT+x} ]]                                ; then KE_CLOUD_PORT='10000'                      ; fi ; echo "kubeedge cloud port: $KE_CLOUD_PORT"
-if [[ -z ${KE_EDGE_NODE+x} ]]                                 ; then KE_EDGE_NODE='microk8s-ke-edge-node'       ; fi ; echo "kubeedge ke edge node: $KE_EDGE_NODE"
+#if [[ -z ${KE_EDGE_NODE+x} ]]                                 ; then KE_EDGE_NODE='microk8s-ke-edge-node'       ; fi ; echo "kubeedge ke edge node: $KE_EDGE_NODE"#
 
 if [[ -z ${KE_IMAGE_FAMILY+x} ]]                              ; then KE_IMAGE_FAMILY='ubuntu-2004-lts'          ; fi ; echo "kubeedge image family: $KE_IMAGE_FAMILY"
 if [[ -z ${KE_IMAGE_PROJECT+x} ]]                             ; then KE_IMAGE_PROJECT='ubuntu-os-cloud'         ; fi ; echo "kubeedge image project: $KE_IMAGE_PROJECT"
-if [[ -z ${KE_CLOUD_INSTANCE+x} ]]                            ; then KE_CLOUD_INSTANCE='microk8s-ke-cloud'      ; fi ; echo "cloud instance name : $KE_CLOUD_INSTANCE"
-if [[ -z ${KE_EDGE_INSTANCE+x} ]]                             ; then KE_EDGE_INSTANCE='microk8s-ke-edge'        ; fi ; echo "edge instance name: $KE_EDGE_INSTANCE"
+if [[ -z ${KE_CLOUD_NODE+x} ]]                                ; then KE_CLOUD_NODE='microk8s-ke-cloud'          ; fi ; echo "cloud instance name : $KE_CLOUD_NODE"
+if [[ -z ${KE_EDGE_NODE+x} ]]                                 ; then KE_EDGE_NODE='microk8s-ke-edge'            ; fi ; echo "edge instance name: $KE_EDGE_NODE"
 if [[ -z ${MK8S_VERSION+x} ]]                                 ; then MK8S_VERSION='1.19'                        ; fi ; echo "microk8s version: $MK8S_VERSION"
 echo -e " "
 
@@ -92,7 +92,7 @@ then
   KE_SECURITY_TOKEN_TAG='ke-security-token:'
   KE_SECURITY_TOKEN=''
   
-  declare -a KE_INSTANCES=("$KE_CLOUD_INSTANCE" "$KE_EDGE_INSTANCE")
+  declare -a KE_INSTANCES=("$KE_CLOUD_NODE" "$KE_EDGE_NODE")
   
   if [[ ! "$ON_GCE" == *'Google'* ]]
   then
