@@ -113,7 +113,7 @@ then
       
       I=0
       STEP=1
-      STEP_REPORT="ke-step-report-$STEP.log" && touch "$STEP_REPORT"
+      STEP_REPORT="ke-step-report-$STEP.log" && rm "$STEP_REPORT" && touch "$STEP_REPORT"
       while [[ ! $(cat "$STEP_REPORT" | grep "$SCRIPT_COMPLETED") && $I -lt 5 ]]
       do
         I=$((I+1))
@@ -124,7 +124,7 @@ then
           if [[ "$STEP" -lt "$TOTAL_STEPS" ]]
           then
             STEP=$((STEP+1))
-            STEP_REPORT="ke-step-report-$STEP.log" && touch "$STEP_REPORT"
+            STEP_REPORT="ke-step-report-$STEP.log" && rm "$STEP_REPORT" && touch "$STEP_REPORT"
           fi
         fi
         if [[ ! -z $(cat "$STEP_REPORT" |  grep "$KE_CLOUD_IP_TAG") ]]
@@ -281,10 +281,24 @@ exec_step2()
     then
       echo -e "\n### kubeedge edgecore setup:"   
       #$KE_ADM join --help
+      #1st keadm join may fail: a second run is then successful
+      echo -e "\n### ls /etc/kubeedge (before keadm join #1):"   
+      ls -l /etc/kubeedge || true
+      echo -e "\n### ls done"   
+      (sudo $KE_ADM join \
+                --cloudcore-ipport="$KE_CLOUD_IP:$KE_CLOUD_PORT"  \
+                --edgenode-name="$KE_EDGE_NODE" \
+                --token="$KE_SECURITY_TOKEN") || true
+      echo -e "\n### ls /etc/kubeedge (after keadm join #1):" 
+      ls -l /etc/kubeedge || true 
+      echo -e "\n### ls done"            
       sudo $KE_ADM join \
                 --cloudcore-ipport="$KE_CLOUD_IP:$KE_CLOUD_PORT"  \
                 --edgenode-name="$KE_EDGE_NODE" \
                 --token="$KE_SECURITY_TOKEN"
+      echo -e "\n### ls /etc/kubeedge (after keadm join #2):"
+      ls -l /etc/kubeedge || true 
+      echo -e "\n### ls done"          
     fi
     echo -e "\n### kubeedge edgecore config:"      
     cat /etc/kubeedge/config/edgecore.yaml
@@ -328,9 +342,17 @@ exec_step2()
       echo -e "\n### kubeedge cloudcore setup:"
       #$KE_ADM init --help
       #sudo $KE_ADM gettoken
-      sudo $KE_ADM init \
+      #sudo keadm init --advertise-address=$(hostname -I | awk '{print $1}') --kube-config $HOME/.kube/config
+      
+      ls -al /usr/local
+      ls -al /usr/local/bin
+      #1st keadm init may fail: a second run is then successful
+      (sudo $KE_ADM init \
                 --advertise-address="$KE_INTERNAL_IP"  \
-                --kube-config "$KUBE_CONFIG"
+                --kube-config "$KUBE_CONFIG") || 
+      (sudo $KE_ADM init \
+                --advertise-address="$KE_INTERNAL_IP"  \
+                --kube-config "$KUBE_CONFIG")
     fi
     echo -e "$KE_CLOUD_IP_TAG $KE_INTERNAL_IP"
     
